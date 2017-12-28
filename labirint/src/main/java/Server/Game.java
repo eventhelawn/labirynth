@@ -109,9 +109,6 @@ public class Game {
             if (b) continue;
         }
         for (; i < mapSize; i++) {
-            for (; j < mapSize; j++) {
-
-            }
 
         }
 
@@ -156,13 +153,25 @@ public class Game {
         }
     }
 
-    class Pair {
+    class Pair implements Comparable {
         int x;
         int y;
 
         public Pair(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        public int compareTo(Object o) {
+            if (o.getClass()==Pair.class){
+                Pair p= (Pair) o;
+                if (p.x>x&&p.y>y)return 1;
+                if (p.x>x&&p.y<y)return 1;
+                if (p.x<x&&p.y>y)return -1;
+                if (p.x<x&&p.y<y)return -1;
+                return 0;
+            }
+            return -1;
         }
     }
 
