@@ -22,7 +22,7 @@ public class LabirynthServer {
                 gamesArchive.add(game);
                 ArrayList<Game.Player> players=game.getPlayers();
                 while (players.size()<2){
-                    players.add(game.new Player(players.size(),listener.accept()));
+                    players.add(game.new Player(players.size(),listener.accept(),game));
                 }
                 for(Game.Player p : players){
                     p.start();

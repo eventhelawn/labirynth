@@ -137,6 +137,7 @@ public class Game {
     }
 
     class Player extends Thread{
+        Game g;
         private int id;
         private boolean alive;
         private int posX;
@@ -150,10 +151,11 @@ public class Game {
             return id;
         }
 
-        public Player(int id, Socket socket) {
+        public Player(int id, Socket socket,Game game) {
             this.id = id;
             this.socket = socket;
             alive = true;
+            g=game;
             posY = mapSize;
             posX = mapSize;
             playerMap = new BlockStatus[mapSize * 2 - 1][mapSize * 2 - 1];
@@ -251,6 +253,7 @@ public class Game {
             try {
                 while (true) {
                     String command = input.readLine();
+                    Interpreter.interpret(command,g,this);
                 }
             } catch (IOException e) {
                 System.out.println("Player died: " + e);
