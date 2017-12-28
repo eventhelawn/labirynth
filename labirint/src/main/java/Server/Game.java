@@ -47,12 +47,12 @@ public class Game {
     private Map<Pair, ArrayList<Player>> scatterPlayers(BlockStatus[][] map) {
         Map<Pair, ArrayList<Player>> r = new TreeMap<Pair, ArrayList<Player>>();
         int c = players.size();
-        while (c > 0) {
+        for (Player p:players){
             for (int i = 0; i < mapSize; i++) {
                 for (int j = 0; j < mapSize; j++) {
-                    if (map[i][j] == BlockStatus.empty) {
+                    if (map[i][j] == BlockStatus.empty&&!playersMap.containsKey(new Pair(i,j))) {
                         ArrayList<Player> b = new ArrayList<Player>();
-                        b.add(players.get(c-1));
+                        b.add(p);
                         r.put(new Pair(i, j), b);
                         c--;
                     }
@@ -62,7 +62,9 @@ public class Game {
         return r;
     }
 
-
+    public void regenerateMap(){
+        map=generateMap(mapSize);
+    }
     private BlockStatus[][] generateMap(int mapSize) {
         BlockStatus[][] r = new BlockStatus[mapSize][mapSize];
         float chanceunb = 1 / 16;
@@ -108,9 +110,12 @@ public class Game {
             }
             if (b) continue;
         }
+        if (save[i][j]!=null){
+            for (;i<mapSize;i++){
 
-        boolean c = false;
-
+            }
+        }
+        else regenerateMap();
     }
 
     public void setBlock(String block) {
