@@ -36,9 +36,12 @@ public class Game {
         turn="";
         rulescount=0;
         map = generateMap(mapSize);
-        playersMap = scatterPlayers(map);
+        players=new ArrayList<Player>();
     }
 
+    public void playersRdy(){
+        playersMap=scatterPlayers(map);
+    }
     private Map<Pair, ArrayList<Player>> scatterPlayers(BlockStatus[][] map) {
         Map<Pair, ArrayList<Player>> r = new TreeMap<Pair, ArrayList<Player>>();
         int c = players.size();

@@ -24,6 +24,7 @@ public class LabirynthServer {
                 while (players.size()<2){
                     players.add(game.new Player(players.size(),listener.accept(),game));
                 }
+                game.playersRdy();
                 for(Game.Player p : players){
                     p.start();
                 }
