@@ -37,7 +37,7 @@ public class Game {
         turn = "";
         rulescount = 0;
         map = generateMap(mapSize);
-        players = new ArrayList<Player>();
+        players = new ArrayList<Player>(0);
     }
 
     public void playersRdy() {
@@ -50,7 +50,7 @@ public class Game {
         for (Player p:players){
             for (int i = 0; i < mapSize; i++) {
                 for (int j = 0; j < mapSize; j++) {
-                    if (map[i][j] == BlockStatus.empty&&!playersMap.containsKey(new Pair(i,j))) {
+                    if (map[i][j] == BlockStatus.empty&&!r.containsKey(new Pair(i,j))) {
                         ArrayList<Player> b = new ArrayList<Player>();
                         b.add(p);
                         r.put(new Pair(i, j), b);
@@ -105,14 +105,21 @@ public class Game {
                 if (map[i][j] == BlockStatus.empty) {
                     b = true;
                     save[i][j]=BlockStatus.empty;
-                    continue;
+                    break;
                 }
             }
-            if (b) continue;
+            if (b) break;
         }
         if (save[i][j]!=null){
+            boolean c=true;
             for (;i<mapSize;i++){
+                while (j<mapSize&&j>=0&&map[i][j]!=BlockStatus.unbrekable){
 
+                    if(c){
+                        j++;
+                    }
+                    else j--;
+                }
             }
         }
         else regenerateMap();
@@ -210,6 +217,7 @@ public class Game {
             } catch (IOException e) {
                 System.out.println("Player died: " + e);
             }
+            this.start();
         }
 
         public void send(String s) {
@@ -294,9 +302,11 @@ public class Game {
         }
 
         public void run() {
+            System.out.println(id);
             try {
                 while (true) {
                     String command = input.readLine();
+                    System.out.println(command);
                     Interpreter.interpret(command, g, this);
                 }
             } catch (IOException e) {

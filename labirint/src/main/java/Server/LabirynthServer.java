@@ -26,9 +26,6 @@ public class LabirynthServer {
                 }
                 game.playersRdy();
                 System.out.println("Gamu startu!");
-                for(Game.Player p : players){
-                    p.start();
-                }
             }
         } finally {
             listener.close();
