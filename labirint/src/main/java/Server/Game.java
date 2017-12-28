@@ -25,6 +25,7 @@ public class Game {
     private String turn;
     private String block;
     int rulescount;
+
     public ArrayList<Player> getPlayers() {
         return players;
     }
@@ -32,33 +33,29 @@ public class Game {
     public Game(int mapSize) {
         this.mapSize = mapSize;
         currentPlayer = 0;
-        hasWinner=false;
-        turn="";
-        rulescount=0;
+        hasWinner = false;
+        turn = "";
+        rulescount = 0;
         map = generateMap(mapSize);
-        players=new ArrayList<Player>();
+        players = new ArrayList<Player>();
     }
 
-    public void playersRdy(){
-        playersMap=scatterPlayers(map);
+    public void playersRdy() {
+        playersMap = scatterPlayers(map);
     }
+
     private Map<Pair, ArrayList<Player>> scatterPlayers(BlockStatus[][] map) {
         Map<Pair, ArrayList<Player>> r = new TreeMap<Pair, ArrayList<Player>>();
         int c = players.size();
-        float chance = 1 / 4;
         while (c > 0) {
             for (int i = 0; i < mapSize; i++) {
                 for (int j = 0; j < mapSize; j++) {
-                    if (map[i][j] == BlockStatus.empty){
-                        double a=Math.random();
-                        if(a>1-chance){
-                            if(r.containsKey(new Pair(i,j)))r.get(new Pair(i,j)).add(players.get(--c));
-                            else {
-                                ArrayList<Player> b=new ArrayList<Player>();
-                                b.add(players.get(--c));
-                                r.put(new Pair(i,j),b);
-                            }
-                        }
+                    if (map[i][j] == BlockStatus.empty) {
+                        ArrayList<Player> b = new ArrayList<Player>();
+                        b.add(players.get(--c));
+                        r.put(new Pair(i, j), b);
+
+
                     }
                 }
             }
@@ -93,42 +90,72 @@ public class Game {
         return r;
     }
 
+    public void removeBags() {
+        BlockStatus[][] save = new BlockStatus[mapSize][mapSize];
+        for (int i = 0; i < mapSize; i++) {
+            for (int j = 0; j < mapSize; j++) {
+                save[i][j] = null;
+            }
+        }
+        boolean b = false;
+        int i = 0, j = 0;
+        for (i = 0; i < mapSize; i++) {
+            for (j = 0; j < mapSize; j++) {
+                if (map[i][j] == BlockStatus.empty) {
+                    b = true;
+                    continue;
+                }
+            }
+            if (b) continue;
+        }
+        for (; i < mapSize; i++) {
+            for (; j < mapSize; j++) {
+
+            }
+
+        }
+
+    }
+
     public void setBlock(String block) {
         this.block = block;
     }
 
     public void addToTurn(String s) {
-        turn+=s;
+        turn += s;
     }
-    public void sendTurn(){
-        for(Player p:players){
-            String t="( turn ( "+currentPlayer+" "+turn+") ) ";
-            t+=block;
-            t+=hasWinner ? " lose":"";
+
+    public void sendTurn() {
+        for (Player p : players) {
+            String t = "( turn ( " + currentPlayer + " " + turn + ") ) ";
+            t += block;
+            t += hasWinner ? " lose" : "";
             p.send(t);
         }
     }
 
     public void selectRules(HashSet<String> r) {
-        HashSet<String> r1=new HashSet<String>();
-        for(String s:rules){
-            if(r.contains(s)){
+        HashSet<String> r1 = new HashSet<String>();
+        for (String s : rules) {
+            if (r.contains(s)) {
                 r1.add(s);
             }
         }
-        rules=r1;
+        rules = r1;
     }
-    public void notifyRules(){
-        String s="( rules ";
-        for(String s2:rules){
-            s+=s2+" ";
+
+    public void notifyRules() {
+        String s = "( rules ";
+        for (String s2 : rules) {
+            s += s2 + " ";
         }
-        s+=")";
-        for(Player p:players){
+        s += ")";
+        for (Player p : players) {
             p.send(s);
-            p.send("( userscount "+players.size()+" )");
+            p.send("( userscount " + players.size() + " )");
         }
     }
+
     class Pair {
         int x;
         int y;
@@ -139,7 +166,7 @@ public class Game {
         }
     }
 
-    class Player extends Thread{
+    class Player extends Thread {
         Game g;
         private int id;
         private boolean alive;
@@ -154,11 +181,11 @@ public class Game {
             return id;
         }
 
-        public Player(int id, Socket socket,Game game) {
+        public Player(int id, Socket socket, Game game) {
             this.id = id;
             this.socket = socket;
             alive = true;
-            g=game;
+            g = game;
             posY = mapSize;
             posX = mapSize;
             playerMap = new BlockStatus[mapSize * 2 - 1][mapSize * 2 - 1];
@@ -172,7 +199,7 @@ public class Game {
             }
         }
 
-        public void send(String s){
+        public void send(String s) {
             output.println(s);
         }
 
@@ -210,8 +237,9 @@ public class Game {
             if (rules.contains("ultimateblow")) {
                 return ultimateBlow(this, d);
             } else {
-                if(Game.this.blow(this, d))hasWinner=true;
-            }return Game.this.blow(this, d);
+                if (Game.this.blow(this, d)) hasWinner = true;
+            }
+            return Game.this.blow(this, d);
         }
 
         public BlockStatus look(Direction d) {
@@ -256,7 +284,7 @@ public class Game {
             try {
                 while (true) {
                     String command = input.readLine();
-                    Interpreter.interpret(command,g,this);
+                    Interpreter.interpret(command, g, this);
                 }
             } catch (IOException e) {
                 System.out.println("Player died: " + e);
