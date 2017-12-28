@@ -25,6 +25,7 @@ public class LabirynthServer {
                     players.add(game.new Player(players.size(),listener.accept(),game));
                 }
                 game.playersRdy();
+                System.out.println("Gamu startu!");
                 for(Game.Player p : players){
                     p.start();
                 }

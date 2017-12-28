@@ -52,10 +52,9 @@ public class Game {
                 for (int j = 0; j < mapSize; j++) {
                     if (map[i][j] == BlockStatus.empty) {
                         ArrayList<Player> b = new ArrayList<Player>();
-                        b.add(players.get(--c));
+                        b.add(players.get(c-1));
                         r.put(new Pair(i, j), b);
-
-
+                        c--;
                     }
                 }
             }
@@ -103,14 +102,14 @@ public class Game {
             for (j = 0; j < mapSize; j++) {
                 if (map[i][j] == BlockStatus.empty) {
                     b = true;
+                    save[i][j]=BlockStatus.empty;
                     continue;
                 }
             }
             if (b) continue;
         }
-        for (; i < mapSize; i++) {
 
-        }
+        boolean c = false;
 
     }
 
@@ -163,12 +162,12 @@ public class Game {
         }
 
         public int compareTo(Object o) {
-            if (o.getClass()==Pair.class){
-                Pair p= (Pair) o;
-                if (p.x>x&&p.y>y)return 1;
-                if (p.x>x&&p.y<y)return 1;
-                if (p.x<x&&p.y>y)return -1;
-                if (p.x<x&&p.y<y)return -1;
+            if (o.getClass() == Pair.class) {
+                Pair p = (Pair) o;
+                if (p.x > x && p.y > y) return 1;
+                if (p.x > x && p.y < y) return 1;
+                if (p.x < x && p.y > y) return -1;
+                if (p.x < x && p.y < y) return -1;
                 return 0;
             }
             return -1;
