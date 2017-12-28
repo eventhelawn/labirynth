@@ -35,6 +35,7 @@ public class Game {
         rulescount = 0;
         map = generateMap(mapSize);
         players = new ArrayList<Player>(0);
+        rules=new HashSet<String>();
     }
 
     public void playersRdy() {
@@ -88,39 +89,7 @@ public class Game {
         return r;
     }
 
-    public void removeBags() {
-        BlockStatus[][] save = new BlockStatus[mapSize][mapSize];
-        for (int i = 0; i < mapSize; i++) {
-            for (int j = 0; j < mapSize; j++) {
-                save[i][j] = null;
-            }
-        }
-        boolean b = false;
-        int i = 0, j = 0;
-        for (i = 0; i < mapSize; i++) {
-            for (j = 0; j < mapSize; j++) {
-                if (map[i][j] == BlockStatus.empty) {
-                    b = true;
-                    save[i][j]=BlockStatus.empty;
-                    break;
-                }
-            }
-            if (b) break;
-        }
-        if (save[i][j]!=null){
-            boolean c=true;
-            for (;i<mapSize;i++){
-                while (j<mapSize&&j>=0&&map[i][j]!=BlockStatus.unbreakable){
-
-                    if(c){
-                        j++;
-                    }
-                    else j--;
-                }
-            }
-        }
-        else regenerateMap();
-    }
+  
 
     public void setBlock(String block) {
         this.block = block;
