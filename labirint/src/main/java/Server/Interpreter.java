@@ -2,6 +2,7 @@ package Server;
 
 import Keywords.Direction;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Stack;
 
@@ -9,7 +10,7 @@ import java.util.Stack;
  * Created by User on 26.12.2017.
  */
 public class Interpreter {
-    public static void interpret(String src, Game g, Game.Player p) {
+    public static void interpret(String src, Game g, Game.Player p) throws IOException {
         String[] tokens = src.split(" ");
         Stack<String> machine = new Stack<String>();
         boolean is = true;

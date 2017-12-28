@@ -3,10 +3,7 @@ package Server;
 import Keywords.BlockStatus;
 import Keywords.Direction;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
@@ -74,14 +71,14 @@ public class Game {
                 double a = Math.random();
                 if (a > 1 - chanceunb) {
                     chanceunb /= 2;
-                    r[i][j] = BlockStatus.unbrekable;
+                    r[i][j] = BlockStatus.unbreakable;
                     continue;
                 }
                 float b = chanceunb;
                 chanceunb = 1 / 16;
                 if (a > 1 - b - chancebr) {
                     chancebr /= 2;
-                    r[i][j] = BlockStatus.brekable;
+                    r[i][j] = BlockStatus.breakable;
                     continue;
                 }
                 chancebr = 1 / 8;
@@ -113,7 +110,7 @@ public class Game {
         if (save[i][j]!=null){
             boolean c=true;
             for (;i<mapSize;i++){
-                while (j<mapSize&&j>=0&&map[i][j]!=BlockStatus.unbrekable){
+                while (j<mapSize&&j>=0&&map[i][j]!=BlockStatus.unbreakable){
 
                     if(c){
                         j++;
@@ -133,7 +130,7 @@ public class Game {
         turn += s;
     }
 
-    public void sendTurn() {
+    public void sendTurn() throws IOException {
         for (Player p : players) {
             String t = "( turn ( " + currentPlayer + " " + turn + ") ) ";
             t += block;
@@ -152,7 +149,7 @@ public class Game {
         rules = r1;
     }
 
-    public void notifyRules() {
+    public void notifyRules() throws IOException {
         String s = "( rules ";
         for (String s2 : rules) {
             s += s2 + " ";
@@ -193,7 +190,7 @@ public class Game {
         private int posX;
         private int posY;
         BufferedReader input;
-        PrintWriter output;
+        BufferedWriter output;
         Socket socket;
         BlockStatus[][] playerMap;
 
@@ -213,15 +210,16 @@ public class Game {
             try {
                 input = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()));
-                output = new PrintWriter(socket.getOutputStream(), true);
+                output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             } catch (IOException e) {
                 System.out.println("Player died: " + e);
             }
             this.start();
         }
 
-        public void send(String s) {
-            output.println(s);
+        public void send(String s) throws IOException {
+            output.write(s + "\n");
+            output.flush();
         }
 
         public void move(Direction d) {
@@ -269,25 +267,25 @@ public class Game {
                 case up:
                     if (posY < mapSize)
                         b = map[posX][posY + 1];
-                    else b = BlockStatus.unbrekable;
+                    else b = BlockStatus.unbreakable;
                     playerMap[posX][posY + 1] = b;
                     break;
                 case down:
                     if (posY > 0)
                         b = map[posX][posY - 1];
-                    else b = BlockStatus.unbrekable;
+                    else b = BlockStatus.unbreakable;
                     playerMap[posX][posY - 1] = b;
                     break;
                 case right:
                     if (posX < mapSize)
                         b = map[posX + 1][posY];
-                    else b = BlockStatus.unbrekable;
+                    else b = BlockStatus.unbreakable;
                     playerMap[posX + 1][posY] = b;
                     break;
                 case left:
                     if (posX > 0)
                         b = map[posX - 1][posY];
-                    else b = BlockStatus.unbrekable;
+                    else b = BlockStatus.unbreakable;
                     playerMap[posX - 1][posY] = b;
                     break;
                 case none:
@@ -330,7 +328,7 @@ public class Game {
         switch (d) {
             case up:
                 if (p.posY < mapSize) {
-                    if (map[p.posX][p.posY + 1] == BlockStatus.brekable) {
+                    if (map[p.posX][p.posY + 1] == BlockStatus.breakable) {
                         map[p.posX][p.posY + 1] = BlockStatus.broken;
                     }
                     if (!playersMap.get(new Pair(p.posX, p.posY + 1)).isEmpty()) {
@@ -343,7 +341,7 @@ public class Game {
                 break;
             case down:
                 if (p.posY < mapSize) {
-                    if (map[p.posX][p.posY - 1] == BlockStatus.brekable) {
+                    if (map[p.posX][p.posY - 1] == BlockStatus.breakable) {
                         map[p.posX][p.posY - 1] = BlockStatus.broken;
                     }
                     if (!playersMap.get(new Pair(p.posX, p.posY - 1)).isEmpty()) {
@@ -356,7 +354,7 @@ public class Game {
                 break;
             case right:
                 if (p.posY < mapSize) {
-                    if (map[p.posX + 1][p.posY] == BlockStatus.brekable) {
+                    if (map[p.posX + 1][p.posY] == BlockStatus.breakable) {
                         map[p.posX + 1][p.posY] = BlockStatus.broken;
                     }
                     if (!playersMap.get(new Pair(p.posX + 1, p.posY)).isEmpty()) {
@@ -369,7 +367,7 @@ public class Game {
                 break;
             case left:
                 if (p.posY < mapSize) {
-                    if (map[p.posX - 1][p.posY] == BlockStatus.brekable) {
+                    if (map[p.posX - 1][p.posY] == BlockStatus.breakable) {
                         map[p.posX - 1][p.posY] = BlockStatus.broken;
                     }
                     if (!playersMap.get(new Pair(p.posX - 1, p.posY)).isEmpty()) {
@@ -392,7 +390,7 @@ public class Game {
         switch (d) {
             case up:
                 i = player.posY;
-                while (i < mapSize && playersMap.get(new Pair(player.posX, i)).isEmpty() && map[player.posX][i] != BlockStatus.unbrekable && map[player.posX][i] != BlockStatus.brekable) {
+                while (i < mapSize && playersMap.get(new Pair(player.posX, i)).isEmpty() && map[player.posX][i] != BlockStatus.unbreakable && map[player.posX][i] != BlockStatus.breakable) {
                     i++;
                 }
                 if (!playersMap.get(new Pair(player.posX, i)).isEmpty()) {
@@ -404,13 +402,13 @@ public class Game {
                         }
                     }
                 }
-                if (map[player.posX][i] == BlockStatus.brekable) {
+                if (map[player.posX][i] == BlockStatus.breakable) {
                     map[player.posX][i] = BlockStatus.broken;
                 }
                 break;
             case down:
                 i = player.posY;
-                while (i >= 0 && playersMap.get(new Pair(player.posX, i)).isEmpty() && map[player.posX][i] != BlockStatus.unbrekable && map[player.posX][i] != BlockStatus.brekable) {
+                while (i >= 0 && playersMap.get(new Pair(player.posX, i)).isEmpty() && map[player.posX][i] != BlockStatus.unbreakable && map[player.posX][i] != BlockStatus.breakable) {
                     i--;
                 }
                 if (!playersMap.get(new Pair(player.posX, i)).isEmpty()) {
@@ -422,13 +420,13 @@ public class Game {
                         }
                     }
                 }
-                if (map[player.posX][i] == BlockStatus.brekable) {
+                if (map[player.posX][i] == BlockStatus.breakable) {
                     map[player.posX][i] = BlockStatus.broken;
                 }
                 break;
             case right:
                 i = player.posX;
-                while (i < mapSize && playersMap.get(new Pair(i, player.posY)).isEmpty() && map[i][player.posY] != BlockStatus.unbrekable && map[i][player.posY] != BlockStatus.brekable) {
+                while (i < mapSize && playersMap.get(new Pair(i, player.posY)).isEmpty() && map[i][player.posY] != BlockStatus.unbreakable && map[i][player.posY] != BlockStatus.breakable) {
                     i++;
                 }
                 if (!playersMap.get(new Pair(i, player.posY)).isEmpty()) {
@@ -440,13 +438,13 @@ public class Game {
                         }
                     }
                 }
-                if (map[i][player.posY] == BlockStatus.brekable) {
+                if (map[i][player.posY] == BlockStatus.breakable) {
                     map[i][player.posY] = BlockStatus.broken;
                 }
                 break;
             case left:
                 i = player.posX;
-                while (i >= 0 && playersMap.get(new Pair(i, player.posY)).isEmpty() && map[i][player.posY] != BlockStatus.unbrekable && map[i][player.posY] != BlockStatus.brekable) {
+                while (i >= 0 && playersMap.get(new Pair(i, player.posY)).isEmpty() && map[i][player.posY] != BlockStatus.unbreakable && map[i][player.posY] != BlockStatus.breakable) {
                     i--;
                 }
                 if (!playersMap.get(new Pair(i, player.posY)).isEmpty()) {
@@ -458,7 +456,7 @@ public class Game {
                         }
                     }
                 }
-                if (map[i][player.posY] == BlockStatus.brekable) {
+                if (map[i][player.posY] == BlockStatus.breakable) {
                     map[i][player.posY] = BlockStatus.broken;
                 }
                 break;
